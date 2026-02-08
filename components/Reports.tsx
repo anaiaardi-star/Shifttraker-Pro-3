@@ -68,7 +68,13 @@ export const Reports = () => {
         if (!lat || !lng) return '';
         const cleanLat = String(lat).trim();
         const cleanLng = String(lng).trim();
-        return `https://www.google.com/maps/@${cleanLat},${cleanLng},16z`;
+        // Usar formato de búsqueda para que aparezca el PIN (punto) en la coordenada
+        return `https://www.google.com/maps/search/?api=1&query=${cleanLat},${cleanLng}`;
+    };
+
+    const getEmbedMapUrl = (lat?: number, lng?: number) => {
+        if (!lat || !lng) return '';
+        return `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
     };
 
     // Función de exportación a CSV
@@ -316,20 +322,43 @@ export const Reports = () => {
                                             <p className="text-2xl font-black text-primary">{selectedShift.startTime}</p>
                                         </div>
                                     </div>
+                                    
+                                    {/* Mapa de Inicio */}
+                                    {selectedShift.latitude && selectedShift.longitude && (
+                                        <div className="space-y-3">
+                                            <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Ubicación de Entrada</label>
+                                            <div className="w-full aspect-video rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm relative group cursor-pointer" 
+                                                 onClick={() => window.open(getPointLink(selectedShift.latitude, selectedShift.longitude), '_blank')}>
+                                                <iframe 
+                                                    width="100%" 
+                                                    height="100%" 
+                                                    style={{ border: 0 }} 
+                                                    loading="lazy" 
+                                                    allowFullScreen 
+                                                    src={getEmbedMapUrl(selectedShift.latitude, selectedShift.longitude)}
+                                                    className="pointer-events-none"
+                                                ></iframe>
+                                                <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors flex items-center justify-center">
+                                                    <div className="bg-white dark:bg-slate-900 px-4 py-2 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2">
+                                                        <span className="material-symbols-outlined text-primary text-sm">open_in_new</span>
+                                                        <span className="text-[10px] font-black uppercase text-slate-700 dark:text-white">Abrir mapa completo</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="flex justify-between items-center text-[10px] font-mono text-slate-500">
+                                                <span>Lat: {selectedShift.latitude} / Lng: {selectedShift.longitude}</span>
+                                                <a href={getPointLink(selectedShift.latitude, selectedShift.longitude)} target="_blank" rel="noopener noreferrer" className="text-primary font-bold hover:underline uppercase tracking-widest">Ver punto en Google Maps</a>
+                                            </div>
+                                        </div>
+                                    )}
+
                                     <div className="space-y-1">
                                         <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">ISO Timestamp de Inicio</label>
                                         <p className="text-xs font-mono text-slate-600 dark:text-slate-300 break-all bg-white dark:bg-slate-950 p-3 rounded-xl border dark:border-slate-800">
                                             {selectedShift.rawDate}
                                         </p>
                                     </div>
-                                    <div className="flex justify-end pt-2">
-                                        {getPointLink(selectedShift.latitude, selectedShift.longitude) !== '' && (
-                                            <a href={getPointLink(selectedShift.latitude, selectedShift.longitude)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-xl text-[10px] font-black uppercase text-primary border border-primary/20 hover:bg-primary hover:text-white transition-all shadow-sm">
-                                                <span className="material-symbols-outlined text-lg">location_on</span>
-                                                Ubicación de Inicio
-                                            </a>
-                                        )}
-                                    </div>
+
                                     <div className="space-y-2 border-t dark:border-slate-700 pt-4">
                                         <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
                                             <span className="material-symbols-outlined text-[12px]">chat</span> Comentario de inicio
@@ -367,20 +396,43 @@ export const Reports = () => {
                                                     <p className="text-2xl font-black text-slate-900 dark:text-white">{selectedShift.endTime}</p>
                                                 </div>
                                             </div>
+
+                                            {/* Mapa de Salida */}
+                                            {selectedShift.latitude_end && selectedShift.longitude_end && (
+                                                <div className="space-y-3">
+                                                    <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Ubicación de Salida</label>
+                                                    <div className="w-full aspect-video rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm relative group cursor-pointer" 
+                                                         onClick={() => window.open(getPointLink(selectedShift.latitude_end, selectedShift.longitude_end), '_blank')}>
+                                                        <iframe 
+                                                            width="100%" 
+                                                            height="100%" 
+                                                            style={{ border: 0 }} 
+                                                            loading="lazy" 
+                                                            allowFullScreen 
+                                                            src={getEmbedMapUrl(selectedShift.latitude_end, selectedShift.longitude_end)}
+                                                            className="pointer-events-none"
+                                                        ></iframe>
+                                                        <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/10 transition-colors flex items-center justify-center">
+                                                            <div className="bg-white dark:bg-slate-900 px-4 py-2 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2">
+                                                                <span className="material-symbols-outlined text-primary text-sm">pin_drop</span>
+                                                                <span className="text-[10px] font-black uppercase text-slate-700 dark:text-white">Abrir marcador completo</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex justify-between items-center text-[10px] font-mono text-slate-500">
+                                                        <span>Lat: {selectedShift.latitude_end} / Lng: {selectedShift.longitude_end}</span>
+                                                        <a href={getPointLink(selectedShift.latitude_end, selectedShift.longitude_end)} target="_blank" rel="noopener noreferrer" className="text-primary font-bold hover:underline uppercase tracking-widest">Ver punto exacto de salida</a>
+                                                    </div>
+                                                </div>
+                                            )}
+
                                             <div className="space-y-1">
                                                 <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">ISO Timestamp de Finalización</label>
                                                 <p className="text-xs font-mono text-slate-600 dark:text-slate-300 break-all bg-white dark:bg-slate-950 p-3 rounded-xl border dark:border-slate-800">
                                                     {selectedShift.rawEndTime || '---'}
                                                 </p>
                                             </div>
-                                            <div className="flex justify-end pt-2">
-                                                {getPointLink(selectedShift.latitude_end, selectedShift.longitude_end) !== '' && (
-                                                    <a href={getPointLink(selectedShift.latitude_end, selectedShift.longitude_end)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-slate-200 dark:bg-slate-700 px-4 py-2 rounded-xl text-[10px] font-black uppercase text-slate-900 dark:text-white border border-slate-300 dark:border-slate-600 hover:bg-slate-900 dark:hover:bg-white dark:hover:text-slate-900 transition-all shadow-sm">
-                                                        <span className="material-symbols-outlined text-lg">pin_drop</span>
-                                                        Ubicación de Salida
-                                                    </a>
-                                                )}
-                                            </div>
+                                            
                                             <div className="space-y-2 border-t dark:border-slate-700 pt-4">
                                                 <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
                                                     <span className="material-symbols-outlined text-[12px]">chat</span> Comentario final
